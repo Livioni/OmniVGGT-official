@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeFusion: Free Lunch from Auxiliary Inputs for 3D Reconstruction</title>
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <!-- Model Viewer for 3D visualization -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <!-- Three.js for PLY to GLB conversion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 40px 40px;
+            background: #ffffff;
+            color: #2d3748;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .logo-container {
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 2.6em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            line-height: 1.3;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            color: #1a202c;
+        }
+
+        h1 .project-name {
+            font-size: 1.1em;
+            font-weight: 800;
+            color: #667eea;
+        }
+
+        .title-divider {
+            display: inline;
+            margin: 0 0.3em;
+            color: #667eea;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #4a5568;
+        }
+
+        .conference-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            margin: 15px 0 25px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .authors {
+            font-size: 1.05em;
+            margin: 25px auto;
+            line-height: 1.8;
+            max-width: 900px;
+            color: #2d3748;
+        }
+
+        .authors a {
+            color: #667eea;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .authors a:hover {
+            border-bottom-color: #667eea;
+            color: #5568d3;
+        }
+
+        .affiliations {
+            font-size: 0.95em;
+            margin: 20px auto;
+            line-height: 1.6;
+            max-width: 800px;
+            color: #718096;
+        }
+
+        .institution-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 30px auto;
+            flex-wrap: wrap;
+            max-width: 1000px;
+        }
+
+        .institution-logos img {
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            filter: grayscale(30%);
+        }
+
+        .institution-logos img:hover {
+            transform: scale(1.1);
+            filter: grayscale(0%);
+        }
+
+        .institution-logos .logo-hkust {
+            height: 70px;
+        }
+
+        .institution-logos .logo-ntu {
+            height: 70px;
+        }
+
+        .institution-logos .logo-sysu {
+            height: 75px;
+        }
+
+        .institution-logos .logo-tongyi {
+            height: 70px;
+        }
+
+        .keywords {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .keyword-tag {
+            background: #f7fafc;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            font-size: 0.95em;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: #5568d3;
+        }
+
+        .content {
+            padding: 60px 40px;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #2d3748;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        .demo-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .demo-container img,
+        .demo-container video {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            line-height: 1.8;
+        }
+
+        .architecture-section {
+            background: #f7fafc;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .architecture-section h3 {
+            color: #667eea;
+            margin: 25px 0 15px;
+            font-size: 1.4em;
+        }
+
+        .architecture-section p,
+        .architecture-section li {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .architecture-section ul {
+            margin-left: 30px;
+        }
+
+        .formula {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .image-caption {
+            text-align: center;
+            color: #718096;
+            font-size: 0.95em;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .results-section {
+            margin: 40px 0;
+        }
+
+        .citation {
+            background: #f7fafc;
+            color: #2d3748;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            position: relative;
+            border: 1px solid #e2e8f0;
+        }
+
+        .citation::before {
+            content: 'Citation';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-size: 0.9em;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+
+        .highlight-box {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Interactive Visualization Styles */
+        .interactive-vis-container {
+            margin: 40px 0;
+            background: #f7fafc;
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .vis-intro {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .main-viewer {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .pointcloud-container {
+            width: 100%;
+            height: 550px;
+            background: #ffffff;
+            position: relative;
+            border-radius: 15px;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 15px;
+        }
+
+        model-viewer::part(default-progress-bar) {
+            background-color: #667eea;
+        }
+
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #4a5568;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .viewer-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .viewer-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .camera-hint {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            z-index: 10;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .camera-hint:hover {
+            opacity: 1;
+        }
+
+        .thumbnail-carousel {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 50px;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-nav:hover {
+            background: #5568d3;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-nav.prev {
+            left: 0;
+        }
+
+        .carousel-nav.next {
+            right: 0;
+        }
+
+        .thumbnail-track {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 10px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #667eea #e2e8f0;
+        }
+
+        .thumbnail-track::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .thumbnail-track::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+
+        .thumbnail-track::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .thumbnail-item {
+            flex-shrink: 0;
+            width: 160px;
+            cursor: pointer;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .thumbnail-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .thumbnail-item.active {
+            border-color: #667eea;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .thumbnail-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .thumbnail-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            color: white;
+            padding: 8px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .thumbnail-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.1s linear;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(102, 126, 234, 0.5);
+        }
+
+        .thumbnail-play-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 9;
+        }
+
+        .thumbnail-item:hover .thumbnail-play-icon {
+            opacity: 0;
+        }
+
+        footer {
+            background: #f7fafc;
+            color: #4a5568;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.95em;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 1.1em;
+            }
+
+            .content {
+                padding: 40px 20px;
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 80%;
+                text-align: center;
+            }
+
+            .interactive-vis-container {
+                padding: 20px;
+            }
+
+            .pointcloud-container {
+                height: 400px;
+            }
+
+            .viewer-info {
+                font-size: 0.85em;
+                padding: 8px 12px;
+                top: 10px;
+                left: 10px;
+            }
+
+            .viewer-counter {
+                font-size: 0.8em;
+                padding: 6px 10px;
+                top: 10px;
+                right: 10px;
+            }
+
+            .camera-hint {
+                font-size: 0.7em;
+                padding: 6px 10px;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .thumbnail-carousel {
+                padding: 0 40px;
+            }
+
+            .carousel-nav {
+                width: 35px;
+                height: 35px;
+                font-size: 1.1em;
+            }
+
+            .thumbnail-item {
+                width: 120px;
+            }
+
+            .thumbnail-item img {
+                height: 80px;
+            }
+
+            .thumbnail-label {
+                font-size: 0.75em;
+                padding: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="images/logo.png" alt="FreeFusion Logo" style="max-width: 200px; height: auto;">
+            </div>
+            <h1>
+                <span class="project-name"><span style="color: rgb(38, 89, 146);">Free</span><span style="color: rgb(199, 64, 52);">Fusion</span></span><span class="title-divider">:</span> Free Lunch from Auxiliary Inputs for 3D Reconstruction
+            </h1>
+            
+            
+            <div class="authors">
+                <a href="#">Haosong Peng</a><sup>1</sup>,
+                <a href="#">Hao Li</a><sup>2</sup>,
+                <a href="#">Yalun Dai</a><sup>2</sup>,
+                <a href="#">Yushi Lan</a><sup>2</sup>,
+                <a href="#">Yihang Luo</a><sup>2</sup>,
+                <br>
+                <a href="#">Tianyu Qi</a><sup>3</sup>,
+                <a href="#">Yufeng Zhan</a><sup>1</sup>,
+                <a href="#">Junfei Zhang</a><sup>3</sup>,
+                <a href="#">Wenchao Xu</a><sup>1</sup>,
+                <a href="#">Ziwei Liu</a><sup>2</sup>
+            </div>
+            
+            <div class="affiliations">
+                <sup>1</sup>HKUST &nbsp;&nbsp;
+                <sup>2</sup>NTU &nbsp;&nbsp;
+                <sup>3</sup>SYSU &nbsp;&nbsp;
+                <sup>4</sup>Alibaba Group
+            </div>
+
+            <div class="institution-logos">
+                <img src="images/hkust.png" alt="HKUST" title="HKUST" class="logo-hkust">
+                <img src="images/NTU_Logo.jpg" alt="南洋理工大学" title="南洋理工大学 NTU" class="logo-ntu">
+                <img src="images/sysu.png" alt="sysu" title="sysu" class="logo-sysu">
+                <img src="images/tongyi.png" alt="tongyi" title="tongyi" class="logo-tongyi">
+            </div>
+
+            <div class="keywords">
+                <span class="keyword-tag">Spatial Foundation Model</span>
+                <span class="keyword-tag">Casual Prior Input</span>
+                <span class="keyword-tag">Vison-Language-Action Model</span>
+            </div>
+            
+            <div class="buttons">
+                <a href="https://huggingface.co/papers/2510.22706" class="btn" target="_blank">📄 Paper</a>
+                <a href="https://arxiv.org/abs/2510.22706" class="btn" target="_blank">📑 arXiv</a>
+                <a href="https://github.com/lifuguan/IGGT_official" class="btn" target="_blank">💻 Code</a>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- Introduction Section -->
+            <div class="section">
+                <h2 class="section-title">Abstract</h2>
+                <div class="highlight-box">
+                    <p style="font-size: 1.1em; line-height: 1.8;">
+                        General 3D foundation models have started to lead the trend of unifying diverse vision tasks, yet most assume RGB-only inputs and ignore readily available geometric cues (e.g., camera intrinsics, poses, and depth maps). To address this issue, we introduce FreeFusion, a novel framework that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
+                        In our framework, a <strong>Lightweight GeoAdapter</strong> is proposed to encode depth and camera intrinsics/extrinsics into a spatial foundation model. It employs zero-initialized convolutions to progressively inject geometric information without disrupting the foundation model's representation space. This design ensures stable optimization with negligible overhead, maintaining inference speed comparable to VGGT even with multiple additional inputs.
+                        Additionally, a <strong>Stochastic Multimodal Training</strong> regimen is proposed, which randomly samples modality subsets per instance during training. This enables an arbitrary number of modality inputs during testing and promotes learning robust spatial representations instead of overfitting to auxiliary cues.
+                        Comprehensive experiments on monocular/multi-view depth estimation, multi-view stereo, and camera pose estimation demonstrate that FreeFusion outperforms prior methods with auxiliary inputs and achieves state-of-the-art results even with RGB-only input. To further highlight its practical utility, we integrated FreeFusion into <strong>vision-language-action (VLA) models</strong>. The enhanced VLA model by FreeFusion achieves state-of-the-art performance across three simulation benchmarks and real-world manipulation tasks, showcasing strong robustness to clutter, spatial prompts, height awareness, and scale variation.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Teaser Image -->
+            <div class="section">
+                <div class="demo-container">
+                    <img src="images/teaser.png" alt="Teaser">
+                    <p class="image-caption">
+                        FreeFusion, a model that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
+                    </p>
+                </div>
+                
+            </div>
+
+            <!-- Key Contributions -->
+            <div class="section">
+                <h2 class="section-title">Key Contributions</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🔧 Casual Prior Input</h3>
+                        <p>FreeFusion supports arbitrary numbers of input images, auxiliary modalities, and their combinations. When auxiliary information is provided, FreeFusion reconstructs spatial relationships more accurately, while still maintaining strong performance with RGB-only input.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📊 Stochastic Multimodal Training</h3>
+                        <p>We adopt a rule-based stochastic training strategy for FreeFusion, ensuring its robustness and generalization when receiving varying numbers and combinations of modalities at test time.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🔌 Enhancing VLA Model Performance</h3>
+                        <p>We integrate FreeFusion with vision-language-action (VLA) models. Additional auxiliary information provides the VLA model with richer spatial understanding, thereby improving its success rate across various VLA tasks.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Architecture Section -->
+            <div class="section">
+                <h2 class="section-title">Architecture</h2>
+                <div class="demo-container">
+                    <img src="images/overview.png" alt="FreeFusion Framework">
+                    <p class="image-caption">
+                        Overview of FreeFusion. 
+                    </p>
+                </div>
+
+                <div class="architecture-section">
+                    <p>
+                    Our goal is to design an enhanced spatial foundation model that not only reconstructs scenes from images but also accepts an arbitrary number of corresponding camera parameters and depth information as auxiliary inputs to guide more accurate 3D scene reconstruction.
+                    FreeFusion takes as input a set of images together with an arbitrary number of corresponding camera parameters (extrinsics and intrinsics) or depth maps. 
+                    Camera placeholder tokens and depth placeholder tokens are used to substitute the tokens for which ground-truth information is missing. 
+                    The inputs are processed through <i>L</i> layers of Alternating-Attention, and finally, three prediction heads are employed to output depth maps, camera poses, and 3D point maps.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Interactive Visualization Section -->
+            <div class="section">
+                <h2 class="section-title">Interactive Visualization</h2>
+                <div class="interactive-vis-container">
+                    <p class="vis-intro">
+                        FreeFusion reconstruction on diverse scenes. Click any thumbnail below to explore its 3D reconstruction and point cloud visualization.<br>
+                        <span style="font-size: 0.95em; color: #667eea;">💡 Hover over thumbnails to preview their image sequences</span>
+                    </p>
+
+                    <!-- Main Viewer -->
+                    <div class="main-viewer" id="mainViewer">
+                        <!-- 3D Model Viewer -->
+                        <div class="pointcloud-container" style="border-radius: 15px;">
+                            <model-viewer
+                                id="modelViewer"
+                                camera-controls
+                                scale="5 5 5"
+                                touch-action="pan-x"
+                                auto-rotate-delay="0"
+                                shadow-intensity="0"
+                                camera-orbit="45deg 75deg 15m"
+                                min-camera-orbit="auto 0deg auto"
+                                max-camera-orbit="auto 180deg auto"
+                                style="background-color: #ffffff;"
+                                environment-image="neutral"
+                                exposure="1.0">
+                                <div class="loading-indicator" id="loadingIndicator" slot="poster">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading 3D Model...</div>
+                                </div>
+                            </model-viewer>
+                            <div class="viewer-info" id="viewerInfo">Meeting Room</div>
+                            <div class="viewer-counter" id="viewerCounter">1 / 11</div>
+                            <div class="camera-hint" title="Drag to rotate | Right-click to pan | Scroll to zoom">💡 Controls</div>
+                        </div>
+                    </div>
+
+                    <!-- Thumbnail Carousel -->
+                    <div class="thumbnail-carousel">
+                        <button class="carousel-nav prev" onclick="scrollCarousel(-1)">‹</button>
+                        <div class="thumbnail-track" id="thumbnailTrack">
+                            <!-- Thumbnails will be dynamically generated -->
+                        </div>
+                        <button class="carousel-nav next" onclick="scrollCarousel(1)">›</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="section">
+                <h2 class="section-title">Experimental Results</h2>
+                <div class="results-section">
+                    <div class="highlight-box">
+                        <p style="font-size: 1.1em; font-weight: 600;">
+                            FreeFusion flexibly accommodates casual inputs, including arbitrary numbers of images, auxiliary information, and input combinations. 
+                            It achieves state-of-the-art performance across multiple tasks, such as <strong>dense reconstruction</strong>, <strong>multi-view depth estimation</strong>, <strong>camera pose estimation</strong>, and <strong>vision-language-action</strong>, while maintaining high inference efficiency. 
+                        </p>
+                    </div>
+                    
+                    <div class="demo-container" style="margin: 40px 0;">
+                        <img src="images/maintable.png" alt="Main Results">
+                        <p class="image-caption">
+                            Performance improvement with different ratios of auxiliary information injection.
+                        </p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <p style="font-size: 1.1em;">
+                            FreeFusion consistently outperforms VGGT even without auxiliary inputs, and all relevant metrics improve when different percentages of camera and depth information are provided. 
+                    </div>
+
+                    <div class="demo-container" style="margin: 40px 0;">
+                        <img src="images/ablation.png" alt="Spatial Tracking">
+                        <p class="image-caption">
+                            Visual Results of FreeFusion with Different Auxiliary Information.
+                        </p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <p style="font-size: 1.1em;">
+                            By exploiting auxiliary information, FreeFusion is capable of accurately reconstructing complex and highly challenging geometric environments. <br>
+                            <strong>(Top)</strong> Camera pose and intrinsic information help correct challenging views with little or no overlap. <br>
+                            <strong>(Middle)</strong> Providing depth information leads to more accurate local geometry, such as on door surfaces. <br> 
+                            <strong>(Bottom)</strong> When both depth and camera information are provided, the relative distances and viewing angles are properly corrected.
+                        </p>
+                    </div>
+
+                    <div class="demo-container" style="margin: 40px 0;">
+                        <img src="images/visualization1.png" alt="Visualization1">
+                        <p class="image-caption">
+                            Visual Comparisons on 7-Scenes, NRGBD, and ETH3D datasets. <br>
+                            FreeFusion exhibits accurate spatial relationships and geometric consistency, even in extremely challenging cases. 
+                        </p>
+                    </div>
+
+                    <div class="demo-container" style="margin: 40px 0;">
+                        <img src="images/visualization3.png" alt="Visualization3">
+                        <p class="image-caption">
+                            More Visualizations on Image Pair Input.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Citation Section -->
+            <div class="section">
+                <h2 class="section-title">Citation</h2>
+                <div class="citation">
+@article{iggt2024,
+  title={IGGT: Instance-Grounded Geometry Transformer for Semantic 3D Reconstruction},
+  author={Hao Li and Zhengyu Zou and Fangfu Liu and Xuanyang Zhang and Fangzhou Hong and 
+          Yukang Cao and Yushi Lan and Manyuan Zhang and Gang Yu and Dingwen Zhang and Ziwei Liu},
+  journal={arXiv preprint arXiv:2510.22706},
+  year={2024}
+}
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 FreeFusion Project | HKUST, NTU, SYSU, Alibaba Group</p>
+            <p style="margin-top: 10px; opacity: 0.8;">A Free Lunch from Auxiliary Inputs for 3D Reconstruction</p>
+        </footer>
+    </div>
+
+    <script>
+        // Visualization data from plys folder
+        // cameraOrbit format: "horizontal vertical distance" (e.g., "45deg 75deg auto")
+        // horizontal: 水平角度 (0deg = front, 90deg = right, 180deg = back, 270deg = left)
+        // vertical: 垂直角度 (0deg = top, 90deg = side, 180deg = bottom)
+        // distance: 距离 (auto or percentage like 120%)
+        const visualizationScenes = [
+            {
+                name: "Meeting Room",
+                folder: "glbs/1",
+                glb: "glbs/1/meeting_room.glb",  // 如果有GLB文件
+                images: ["000.png", "001.png", "002.png", "003.png"],
+                cameraOrbit: "149deg 64deg 4m"
+            },
+            {
+                name: "Hospital",
+                folder: "glbs/2",
+                glb: "glbs/2/hospital.glb",
+                images: ["000.png", "001.png", "003.png", "004.png"],
+                cameraOrbit: "182deg 87deg 4m"
+            },
+            {
+                name: "Living Room",
+                folder: "glbs/3",
+                glb: "glbs/3/living_room.glb",
+                images: ["000.png", "001.png", "002.png"],
+                cameraOrbit: "192deg 87deg 4m"
+            },
+            {
+                name: "Beverage Shop",
+                folder: "glbs/4",
+                glb: "glbs/4/beverage.glb",
+                images: ["000.png", "001.png", "002.png"],
+                cameraOrbit: "200deg 100deg 4m"
+            },
+            {
+                name: "Massage Room",
+                folder: "glbs/5",
+                glb: "glbs/5/massage_room.glb",
+                images: ["000.png", "001.png", "002.png","003.png", "004.png", "005.png", "006.png"],
+                cameraOrbit: "224deg 80deg 4m"
+            },
+            {
+                name: "Buildings",
+                folder: "glbs/6",
+                glb: "glbs/6/buildings.glb",
+                images: ["000.jpg", "001.jpg", "002.jpg"],
+                cameraOrbit: "177deg 106deg 4m"
+            },
+            {
+                name: "Village",
+                folder: "glbs/7",
+                glb: "glbs/7/village.glb",  // 使用PLY文件
+                images: ["005.jpg", "001.jpg", "002.jpg", "003.jpg","004.jpg"],
+                cameraOrbit: "170deg 100deg 15m"
+            },
+            {
+                name: "Bread",
+                folder: "glbs/8",
+                glb: "glbs/8/bread.glb",  // 使用PLY文件
+                images: ["000.jpg", "001.jpg",],
+                cameraOrbit: "-170deg 107deg 4m"
+            },
+            {
+                name: "Tunnel",
+                folder: "glbs/9",
+                glb: "glbs/9/tunnel.glb",  // 使用PLY文件
+                images: ["000.jpg", "001.jpg","002.jpg","003.jpg",],
+                cameraOrbit: "178deg 95deg 4m"
+            },
+            {
+                name: "Barn",
+                folder: "glbs/10",
+                glb: "glbs/10/barn.glb",  // 使用PLY文件
+                images: ["000.jpg", "001.jpg","002.jpg","003.jpg",],
+                cameraOrbit: "217deg 68deg 15m"
+            },
+            {
+                name: "Toy",
+                folder: "glbs/11",
+                glb: "glbs/11/toy.glb",  // 使用PLY文件
+                images: ["000.jpg",],
+                cameraOrbit: "178deg 95deg 10m"
+            },
+        ];
+
+        let currentSceneIndex = 0;
+        let modelViewer;
+        let thumbnailIntervals = {}; // 存储每个缩略图的播放间隔
+        let glbCache = {}; // 缓存转换后的GLB模型
+        let isInitialLoad = true; // 标记是否为初始加载
+
+        // 确保页面始终从顶部开始
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
+        }
+        
+        // Initialize the visualization on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // 强制滚动到顶部
+            window.scrollTo(0, 0);
+            
+            modelViewer = document.getElementById('modelViewer');
+            initializeVisualization();
+            
+            // 初始化完成后重置标志
+            setTimeout(() => {
+                isInitialLoad = false;
+            }, 100);
+        });
+
+        // Load 3D model using model-viewer
+        function loadModel(sceneData) {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            loadingIndicator.innerHTML = '<div class="loading-spinner"></div><div>Loading 3D Model...</div>';
+            
+            // Check if GLB exists, otherwise convert PLY
+            if (sceneData.glb) {
+                // Direct GLB loading
+                modelViewer.src = sceneData.glb;
+                applyCameraOrbitSettings(sceneData);
+                
+                // Hide loading indicator when model loads and apply settings again
+                modelViewer.addEventListener('load', function() {
+                    // 模型加载完成后再次应用设置，确保orientation生效
+                    applyCameraOrbitSettings(sceneData);
+                    loadingIndicator.style.display = 'none';
+                }, { once: true });
+                
+                // Handle load error
+                modelViewer.addEventListener('error', function(event) {
+                    console.error('Error loading model:', event);
+                    loadingIndicator.innerHTML = '<div style="color: #ff6b6b;">Error loading model</div>';
+                }, { once: true });
+            } else if (sceneData.ply) {
+                // Convert PLY to GLB
+                const cacheKey = sceneData.ply;
+                
+                if (glbCache[cacheKey]) {
+                    // Use cached GLB
+                    console.log('Using cached GLB for:', sceneData.name);
+                    modelViewer.src = glbCache[cacheKey];
+                    applyCameraOrbitSettings(sceneData);
+                    
+                    // 等待模型加载完成后再次应用设置
+                    modelViewer.addEventListener('load', function() {
+                        applyCameraOrbitSettings(sceneData);
+                        loadingIndicator.style.display = 'none';
+                    }, { once: true });
+                } else {
+                    // Convert PLY to GLB
+                    loadingIndicator.innerHTML = '<div class="loading-spinner"></div><div>Converting PLY to GLB...</div>';
+                    convertPLYtoGLB(sceneData.ply, function(glbUrl) {
+                        glbCache[cacheKey] = glbUrl;
+                        modelViewer.src = glbUrl;
+                        applyCameraOrbitSettings(sceneData);
+                        
+                        // 等待模型加载完成后再次应用设置
+                        modelViewer.addEventListener('load', function() {
+                            applyCameraOrbitSettings(sceneData);
+                            loadingIndicator.style.display = 'none';
+                        }, { once: true });
+                    });
+                }
+            } else {
+                console.error('No GLB or PLY file specified for:', sceneData.name);
+                loadingIndicator.innerHTML = '<div style="color: #ff6b6b;">No 3D model available</div>';
+            }
+        }
+
+        // Apply camera orbit settings
+        function applyCameraOrbitSettings(sceneData) {
+            const orbit = sceneData.cameraOrbit || "180deg 70deg auto";
+            
+            // 确保旋转限制允许完全自由的旋转
+            modelViewer.minCameraOrbit = "auto 0deg auto";  // 允许任意距离和水平角度，垂直0-180度
+            modelViewer.maxCameraOrbit = "auto 180deg auto"; // 允许360度水平旋转
+            
+            // 应用模型旋转对齐坐标轴（如果指定）
+            if (sceneData.orientation) {
+                modelViewer.orientation = sceneData.orientation;
+                console.log('Applied model orientation:', sceneData.orientation);
+            } else {
+                // 默认不旋转
+                modelViewer.orientation = "0deg 0deg 0deg";
+            }
+            
+            modelViewer.cameraOrbit = orbit;
+            modelViewer.resetTurntableRotation(0);
+            modelViewer.jumpCameraToGoal();
+        }
+
+        // Convert PLY to GLB for model-viewer
+        function convertPLYtoGLB(plyPath, callback) {
+            console.log('🔄 Converting PLY to GLB:', plyPath);
+            
+            const loader = new THREE.PLYLoader();
+            loader.load(
+                plyPath,
+                function(geometry) {
+                    console.log('✅ PLY loaded, vertices:', geometry.attributes.position.count);
+                    geometry.computeVertexNormals();
+                    
+                    // Create point cloud mesh with appropriate size
+                    const material = new THREE.PointsMaterial({
+                        size: 0.01,  // Point size
+                        vertexColors: true,
+                        sizeAttenuation: true
+                    });
+                    const points = new THREE.Points(geometry, material);
+                    
+                    // Center and scale the point cloud
+                    geometry.computeBoundingBox();
+                    const center = geometry.boundingBox.getCenter(new THREE.Vector3());
+                    points.position.sub(center);
+                    
+                    const size = geometry.boundingBox.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scale = 2.0 / maxDim;
+                    points.scale.set(scale, scale, scale);
+                    
+                    // Create scene for export
+                    const tempScene = new THREE.Scene();
+                    tempScene.add(points);
+                    
+                    // Export to GLB
+                    const exporter = new THREE.GLTFExporter();
+                    exporter.parse(
+                        tempScene,
+                        function(gltf) {
+                            const blob = new Blob([gltf], { type: 'model/gltf-binary' });
+                            const url = URL.createObjectURL(blob);
+                            console.log('✅ PLY successfully converted to GLB');
+                            callback(url);
+                        },
+                        function(error) {
+                            console.error('❌ Error exporting GLB:', error);
+                        },
+                        { binary: true }
+                    );
+                },
+                function(xhr) {
+                    const percentComplete = Math.round((xhr.loaded / xhr.total) * 100);
+                    console.log('📥 Loading PLY: ' + percentComplete + '%');
+                },
+                function(error) {
+                    console.error('❌ Error loading PLY:', error);
+                }
+            );
+        }
+
+        function initializeVisualization() {
+            const thumbnailTrack = document.getElementById('thumbnailTrack');
+            
+            // Generate thumbnails using first image of each scene
+            visualizationScenes.forEach((sceneData, index) => {
+                const thumbnailItem = document.createElement('div');
+                thumbnailItem.className = 'thumbnail-item' + (index === 0 ? ' active' : '');
+                thumbnailItem.onclick = () => selectScene(index);
+                thumbnailItem.dataset.sceneIndex = index;
+                
+                const firstImage = `${sceneData.folder}/${sceneData.images[0]}`;
+                const hasMultipleImages = sceneData.images.length > 1;
+                thumbnailItem.innerHTML = `
+                    <img src="${firstImage}" alt="${sceneData.name}" class="thumbnail-image">
+                    <div class="thumbnail-label">${sceneData.name}</div>
+                    <div class="thumbnail-progress"></div>
+                    ${hasMultipleImages ? '<div class="thumbnail-play-icon">▶</div>' : ''}
+                `;
+                
+                // Add hover event to play image sequence in the thumbnail itself
+                thumbnailItem.addEventListener('mouseenter', () => {
+                    playThumbnailSequence(thumbnailItem, index);
+                });
+                
+                thumbnailItem.addEventListener('mouseleave', () => {
+                    stopThumbnailSequence(thumbnailItem, index);
+                });
+                
+                thumbnailTrack.appendChild(thumbnailItem);
+            });
+
+            // Load first scene
+            selectScene(0);
+        }
+
+        function selectScene(index) {
+            currentSceneIndex = index;
+            const sceneData = visualizationScenes[index];
+            
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+
+            // Update viewer info
+            document.getElementById('viewerInfo').textContent = sceneData.name;
+            document.getElementById('viewerCounter').textContent = `${index + 1} / ${visualizationScenes.length}`;
+            
+            // Load 3D model with custom camera settings
+            loadModel(sceneData);
+            
+            // Scroll thumbnail into view (但初始加载时不滚动，避免页面跳转)
+            if (!isInitialLoad) {
+                const thumbnailTrack = document.getElementById('thumbnailTrack');
+                const activeThumbnail = thumbnailTrack.children[index];
+                if (activeThumbnail) {
+                    activeThumbnail.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+        }
+
+        // Play image sequence in the thumbnail itself
+        function playThumbnailSequence(thumbnailItem, sceneIndex) {
+            const sceneData = visualizationScenes[sceneIndex];
+            if (sceneData.images.length <= 1) return; // No sequence to play
+            
+            const img = thumbnailItem.querySelector('.thumbnail-image');
+            const progressBar = thumbnailItem.querySelector('.thumbnail-progress');
+            let currentIndex = 0;
+            
+            // Update image immediately
+            img.src = `${sceneData.folder}/${sceneData.images[currentIndex]}`;
+            progressBar.style.width = '0%';
+            
+            // Start playing sequence
+            thumbnailIntervals[sceneIndex] = setInterval(() => {
+                currentIndex = (currentIndex + 1) % sceneData.images.length;
+                img.src = `${sceneData.folder}/${sceneData.images[currentIndex]}`;
+                
+                // Update progress bar
+                const progress = ((currentIndex + 1) / sceneData.images.length) * 100;
+                progressBar.style.width = progress + '%';
+            }, 300); // Change image every 300ms
+        }
+
+        // Stop playing sequence and reset to first image
+        function stopThumbnailSequence(thumbnailItem, sceneIndex) {
+            if (thumbnailIntervals[sceneIndex]) {
+                clearInterval(thumbnailIntervals[sceneIndex]);
+                delete thumbnailIntervals[sceneIndex];
+            }
+            
+            const sceneData = visualizationScenes[sceneIndex];
+            const img = thumbnailItem.querySelector('.thumbnail-image');
+            const progressBar = thumbnailItem.querySelector('.thumbnail-progress');
+            
+            // Reset to first image
+            img.src = `${sceneData.folder}/${sceneData.images[0]}`;
+            progressBar.style.width = '0%';
+        }
+
+        function scrollCarousel(direction) {
+            const thumbnailTrack = document.getElementById('thumbnailTrack');
+            const scrollAmount = 200;
+            thumbnailTrack.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // 防止在输入框中触发
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            if (e.key === 'ArrowLeft') {
+                const prevIndex = (currentSceneIndex - 1 + visualizationScenes.length) % visualizationScenes.length;
+                selectScene(prevIndex);
+            } else if (e.key === 'ArrowRight') {
+                const nextIndex = (currentSceneIndex + 1) % visualizationScenes.length;
+                selectScene(nextIndex);
+            }
+        });
+
+    </script>
+</body>
+</html>
