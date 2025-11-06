@@ -141,19 +141,23 @@
         }
 
         .institution-logos .logo-hkust {
-            height: 70px;
+            height: 60px;
         }
 
         .institution-logos .logo-ntu {
-            height: 70px;
+            height: 60px;
         }
 
         .institution-logos .logo-sysu {
-            height: 75px;
+            height: 62px;
+        }
+
+        .institution-logos .logo-nus {
+            height: 68px;
         }
 
         .institution-logos .logo-tongyi {
-            height: 70px;
+            height: 60px;
         }
 
         .keywords {
@@ -619,6 +623,253 @@
             opacity: 0;
         }
 
+        /* Ablation Comparison Styles */
+        .ablation-comparison-container {
+            margin: 40px 0;
+            background: #f7fafc;
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ablation-navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0 20px;
+        }
+
+        .ablation-nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .ablation-nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .ablation-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ablation-counter {
+            background: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ablation-content {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            align-items: flex-start;
+        }
+
+        .ablation-images {
+            flex: 0 0 25%;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 560px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ablation-images h3 {
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .image-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .image-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .image-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .image-grid::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+
+        .image-grid::-webkit-scrollbar-thumb:hover {
+            background: #5568d3;
+        }
+
+        .image-grid img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .image-grid img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .ablation-viewer {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: 560px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ablation-viewer h3 {
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .comparison-viewer-container {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .model-viewer-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .comparison-model {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .comparison-model model-viewer {
+            width: 100%;
+            height: 100%;
+        }
+
+        .left-model {
+            clip-path: inset(0 50% 0 0);
+        }
+
+        .right-model {
+            clip-path: inset(0 0 0 50%);
+        }
+
+        .model-label {
+            position: absolute;
+            top: 15px;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .left-label {
+            left: 15px;
+        }
+
+        .right-label {
+            right: 15px;
+        }
+
+        .comparison-slider {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: transparent;
+            cursor: ew-resize;
+            z-index: 20;
+            transform: translateX(-2px);
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            transform: translateX(-2px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slider-line {
+            flex: 1;
+            width: 4px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .slider-button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: ew-resize;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s ease;
+            user-select: none;
+        }
+
+        .slider-button:hover {
+            transform: scale(1.1);
+        }
+
+        .comparison-slider:active .slider-button {
+            transform: scale(0.95);
+        }
+
         footer {
             background: #f7fafc;
             color: #4a5568;
@@ -703,6 +954,61 @@
                 font-size: 0.75em;
                 padding: 6px;
             }
+
+            /* Ablation Comparison Responsive */
+            .ablation-comparison-container {
+                padding: 20px;
+            }
+
+            .ablation-navigation {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .ablation-nav-btn {
+                padding: 8px 18px;
+                font-size: 0.9em;
+            }
+
+            .ablation-counter {
+                padding: 6px 16px;
+                font-size: 0.9em;
+            }
+
+            .ablation-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .ablation-images {
+                flex: 1;
+                height: auto;
+                max-height: 400px;
+            }
+
+            .ablation-viewer {
+                height: 400px;
+            }
+
+            .model-label {
+                font-size: 0.8em;
+                padding: 6px 12px;
+                top: 10px;
+            }
+
+            .left-label {
+                left: 10px;
+            }
+
+            .right-label {
+                right: 10px;
+            }
+
+            .slider-button {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
         }
     </style>
 </head>
@@ -723,10 +1029,11 @@
                 <a href="#">Yalun Dai</a><sup>2</sup>,
                 <a href="#">Yushi Lan</a><sup>2</sup>,
                 <a href="#">Yihang Luo</a><sup>2</sup>,
-                <br>
                 <a href="#">Tianyu Qi</a><sup>3</sup>,
+                <br>
+                <a href="#">Zhengshen Zhang</a><sup>4</sup>,
                 <a href="#">Yufeng Zhan</a><sup>1</sup>,
-                <a href="#">Junfei Zhang</a><sup>3</sup>,
+                <a href="#">Junfei Zhang</a><sup>5</sup>,
                 <a href="#">Wenchao Xu</a><sup>1</sup>,
                 <a href="#">Ziwei Liu</a><sup>2</sup>
             </div>
@@ -735,19 +1042,22 @@
                 <sup>1</sup>HKUST &nbsp;&nbsp;
                 <sup>2</sup>NTU &nbsp;&nbsp;
                 <sup>3</sup>SYSU &nbsp;&nbsp;
-                <sup>4</sup>Alibaba Group
+                <sup>4</sup>NUS &nbsp;&nbsp;
+                <sup>5</sup>Alibaba Group
+
             </div>
 
             <div class="institution-logos">
                 <img src="images/hkust.png" alt="HKUST" title="HKUST" class="logo-hkust">
                 <img src="images/NTU_Logo.jpg" alt="南洋理工大学" title="南洋理工大学 NTU" class="logo-ntu">
                 <img src="images/sysu.png" alt="sysu" title="sysu" class="logo-sysu">
+                <img src="images/nus_logo.jpg" alt="nus" title="nus" class="logo-nus">
                 <img src="images/tongyi.png" alt="tongyi" title="tongyi" class="logo-tongyi">
             </div>
 
             <div class="keywords">
                 <span class="keyword-tag">Spatial Foundation Model</span>
-                <span class="keyword-tag">Casual Prior Input</span>
+                <span class="keyword-tag">Casual Prior Input with GeoAdapter</span>
                 <span class="keyword-tag">Vison-Language-Action Model</span>
             </div>
             
@@ -765,10 +1075,15 @@
                 <h2 class="section-title">Abstract</h2>
                 <div class="highlight-box">
                     <p style="font-size: 1.1em; line-height: 1.8;">
-                        General 3D foundation models have started to lead the trend of unifying diverse vision tasks, yet most assume RGB-only inputs and ignore readily available geometric cues (e.g., camera intrinsics, poses, and depth maps). To address this issue, we introduce FreeFusion, a novel framework that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
-                        In our framework, a <strong>Lightweight GeoAdapter</strong> is proposed to encode depth and camera intrinsics/extrinsics into a spatial foundation model. It employs zero-initialized convolutions to progressively inject geometric information without disrupting the foundation model's representation space. This design ensures stable optimization with negligible overhead, maintaining inference speed comparable to VGGT even with multiple additional inputs.
-                        Additionally, a <strong>Stochastic Multimodal Training</strong> regimen is proposed, which randomly samples modality subsets per instance during training. This enables an arbitrary number of modality inputs during testing and promotes learning robust spatial representations instead of overfitting to auxiliary cues.
-                        Comprehensive experiments on monocular/multi-view depth estimation, multi-view stereo, and camera pose estimation demonstrate that FreeFusion outperforms prior methods with auxiliary inputs and achieves state-of-the-art results even with RGB-only input. To further highlight its practical utility, we integrated FreeFusion into <strong>vision-language-action (VLA) models</strong>. The enhanced VLA model by FreeFusion achieves state-of-the-art performance across three simulation benchmarks and real-world manipulation tasks, showcasing strong robustness to clutter, spatial prompts, height awareness, and scale variation.
+                        General 3D foundation models have started to lead the trend of unifying diverse vision tasks, yet most assume RGB-only inputs and ignore readily available geometric cues (e.g., camera intrinsics, poses, and depth maps). 
+                        To address this issue, we introduce FreeFusion, a novel framework that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
+                        In our framework, a <strong>GeoAdapter</strong> is proposed to encode depth and camera intrinsics/extrinsics into a spatial foundation model.
+                        It employs zero-initialized convolutions to progressively inject geometric information without disrupting the foundation model's representation space. 
+                        Additionally, a <strong>Stochastic Multimodal Fusion</strong> regimen is proposed, which randomly samples modality subsets per instance during training. 
+                        This enables an arbitrary number of modality inputs during testing and promotes learning robust spatial representations instead of overfitting to auxiliary cues. 
+                        Comprehensive experiments on several downstream tasks demonstrate that FreeFusion outperforms prior methods with auxiliary inputs and achieves state-of-the-art results even with RGB-only input. 
+                        To further highlight its practical utility, we integrated FreeFusion into <strong>vision-language-action (VLA) models</strong>. 
+                        The enhanced VLA model by FreeFusion achieves state-of-the-art performance across three simulation benchmarks and real-world manipulation tasks, showcasing strong robustness to clutter, spatial prompts, height awareness, and scale variation.
                     </p>
                 </div>
             </div>
@@ -789,11 +1104,11 @@
                 <h2 class="section-title">Key Contributions</h2>
                 <div class="feature-grid">
                     <div class="feature-card">
-                        <h3>🔧 Casual Prior Input</h3>
-                        <p>FreeFusion supports arbitrary numbers of input images, auxiliary modalities, and their combinations. When auxiliary information is provided, FreeFusion reconstructs spatial relationships more accurately, while still maintaining strong performance with RGB-only input.</p>
+                        <h3>🔧 GeoAdapter for Stochastic Multimodal Inputs</h3>
+                        <p>FreeFusion uses a light-weight GeoAdapter that supports arbitrary numbers of input images, auxiliary modalities, and their combinations.</p>
                     </div>
                     <div class="feature-card">
-                        <h3>📊 Stochastic Multimodal Training</h3>
+                        <h3>📊 Stochastic Multimodal Fusion</h3>
                         <p>We adopt a rule-based stochastic training strategy for FreeFusion, ensuring its robustness and generalization when receiving varying numbers and combinations of modalities at test time.</p>
                     </div>
                     <div class="feature-card">
@@ -823,9 +1138,84 @@
                 </div>
             </div>
 
+            <!-- Auxiliary Information Guidance Section -->
+            <div class="section">
+                <h2 class="section-title">Auxiliary Information Guidance</h2>
+                <div class="ablation-comparison-container">
+                    <p class="vis-intro">
+                        Compare the reconstruction quality with auxiliary information guidance.<br>
+                        <span style="font-size: 0.95em; color: #667eea;">💡 Drag the slider to compare the two models</span>
+                    </p>
+                    
+                    <!-- Scene Navigation -->
+                    <div class="ablation-navigation">
+                        <button class="ablation-nav-btn" id="ablationPrevBtn" onclick="changeAblationScene(-1)">‹ Previous</button>
+                        <span class="ablation-counter" id="ablationCounter">Scene 1 / 4</span>
+                        <button class="ablation-nav-btn" id="ablationNextBtn" onclick="changeAblationScene(1)">Next ›</button>
+                    </div>
+                    
+                    <div class="ablation-content">
+                        <!-- Left: Image Gallery -->
+                        <div class="ablation-images">
+                            <h3 style="text-align: center; color: #667eea; margin-bottom: 15px;">Input Images</h3>
+                            <div class="image-grid" id="ablationImageGrid">
+                                <!-- Images will be dynamically loaded -->
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Model Comparison Viewer -->
+                        <div class="ablation-viewer">
+                            <h3 style="text-align: center; color: #667eea; margin-bottom: 15px;">3D Reconstruction Comparison</h3>
+                            <div class="comparison-viewer-container">
+                                <div class="model-viewer-wrapper">
+                                    <!-- Model 1: Without Information -->
+                                    <div class="comparison-model left-model">
+                                        <model-viewer
+                                            id="ablationModelLeft"
+                                            camera-controls
+                                            touch-action="pan-x"
+                                            auto-rotate-delay="0"
+                                            shadow-intensity="0"
+                                            style="background-color: #ffffff;"
+                                            environment-image="neutral"
+                                            exposure="1.0">
+                                        </model-viewer>
+                                        <div class="model-label left-label" id="ablationLeftLabel">Without Information</div>
+                                    </div>
+                                    
+                                    <!-- Model 2: With Information -->
+                                    <div class="comparison-model right-model">
+                                        <model-viewer
+                                            id="ablationModelRight"
+                                            camera-controls
+                                            touch-action="pan-x"
+                                            auto-rotate-delay="0"
+                                            shadow-intensity="0"
+                                            style="background-color: #ffffff;"
+                                            environment-image="neutral"
+                                            exposure="1.0">
+                                        </model-viewer>
+                                        <div class="model-label right-label" id="ablationRightLabel">With Information</div>
+                                    </div>
+                                    
+                                    <!-- Slider -->
+                                    <div class="comparison-slider" id="comparisonSlider">
+                                        <div class="slider-handle">
+                                            <div class="slider-line"></div>
+                                            <div class="slider-button">⇄</div>
+                                            <div class="slider-line"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Interactive Visualization Section -->
             <div class="section">
-                <h2 class="section-title">Interactive Visualization</h2>
+                <h2 class="section-title">More Interactive Visualization</h2>
                 <div class="interactive-vis-container">
                     <p class="vis-intro">
                         FreeFusion reconstruction on diverse scenes. Click any thumbnail below to explore its 3D reconstruction and point cloud visualization.<br>
@@ -843,7 +1233,6 @@
                                 touch-action="pan-x"
                                 auto-rotate-delay="0"
                                 shadow-intensity="0"
-                                camera-orbit="45deg 75deg 15m"
                                 min-camera-orbit="auto 0deg auto"
                                 max-camera-orbit="auto 180deg auto"
                                 style="background-color: #ffffff;"
@@ -1325,6 +1714,241 @@
                 selectScene(nextIndex);
             }
         });
+
+        // Ablation Scene Data
+        const ablationScenes = [
+            {
+                name: "Camera Scene 1",
+                type: "camera",
+                folder: "glbs/ablations/camera/0",
+                images: ["DSC_0286.JPG", "DSC_0296.JPG", "DSC_0299.JPG", "DSC_0314.JPG"],
+                modelWithout: "glbs/ablations/camera/0/scene_0_woc.glb",
+                modelWith: "glbs/ablations/camera/0/scene_0_wc.glb",
+                cameraOrbit: "228deg 79deg 5m",
+                cameraTarget: "0.08m 0.64m -0.05m"
+            },
+            {
+                name: "Camera Scene 2",
+                type: "camera",
+                folder: "glbs/ablations/camera/1",
+                images: ["DSC_0676.JPG", "DSC_0680.JPG", "DSC_0704.JPG"],
+                modelWithout: "glbs/ablations/camera/1/scene_19_woc.glb",
+                modelWith: "glbs/ablations/camera/1/scene_19_wc.glb",
+                cameraOrbit: "260deg 77deg 5m",
+                cameraTarget: "0.26m 0.09m -0.56m"
+            },
+            {
+                name: "Depth Scene 1",
+                type: "depth",
+                folder: "glbs/ablations/depth/0",
+                images: ["Image_16_0_0001_0.png", "Image_37_0_0001_0.png", "Image_47_0_0001_0.png", "Image_97_0_0001_0.png"],
+                modelWithout: "glbs/ablations/depth/0/scene_7_wod.glb",
+                modelWith: "glbs/ablations/depth/0/scene_7_wd.glb",
+                cameraOrbit: "169deg 78deg 2m",
+                cameraTarget: "0.43m 0.09m 0.31m"
+            },
+            {
+                name: "Depth Scene 2",
+                type: "depth",
+                folder: "glbs/ablations/depth/1",
+                images: ["Image_26_0_0001_0.png", "Image_33_0_0001_0.png", "Image_81_0_0001_0.png", "Image_91_0_0001_0.png"],
+                modelWithout: "glbs/ablations/depth/1/scene_25_wod.glb",
+                modelWith: "glbs/ablations/depth/1/scene_25_wd.glb",
+                cameraOrbit: "184deg 88deg 2m",
+                cameraTarget: "-0.06m -0.04m 0.27m"
+            }
+        ];
+
+        let currentAblationIndex = 0;
+
+        // Initialize ablation scene on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAblationScene(0);
+        });
+
+        // Change ablation scene
+        function changeAblationScene(direction) {
+            currentAblationIndex += direction;
+            
+            // Wrap around
+            if (currentAblationIndex < 0) {
+                currentAblationIndex = ablationScenes.length - 1;
+            } else if (currentAblationIndex >= ablationScenes.length) {
+                currentAblationIndex = 0;
+            }
+            
+            loadAblationScene(currentAblationIndex);
+        }
+
+        // Load ablation scene
+        function loadAblationScene(index) {
+            const scene = ablationScenes[index];
+            
+            // Update counter
+            document.getElementById('ablationCounter').textContent = `Scene ${index + 1} / ${ablationScenes.length}`;
+            
+            // Update labels based on scene type
+            const leftLabel = document.getElementById('ablationLeftLabel');
+            const rightLabel = document.getElementById('ablationRightLabel');
+            
+            if (scene.type === 'camera') {
+                leftLabel.textContent = 'Without Camera Information';
+                rightLabel.textContent = 'With Camera Information';
+            } else if (scene.type === 'depth') {
+                leftLabel.textContent = 'Without Depth Information';
+                rightLabel.textContent = 'With Depth Information';
+            }
+            
+            // Update images
+            const imageGrid = document.getElementById('ablationImageGrid');
+            imageGrid.innerHTML = '';
+            scene.images.forEach((img, i) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = `${scene.folder}/${img}`;
+                imgElement.alt = `Input ${i + 1}`;
+                imageGrid.appendChild(imgElement);
+            });
+            
+            // Update models
+            const leftViewer = document.getElementById('ablationModelLeft');
+            const rightViewer = document.getElementById('ablationModelRight');
+            
+            if (leftViewer && rightViewer) {
+                // Function to apply camera settings
+                const applyCameraSettings = (viewer) => {
+                    // Set camera orbit restrictions
+                    viewer.minCameraOrbit = "auto 0deg 1m";
+                    viewer.maxCameraOrbit = "auto 180deg 10m";
+                    
+                    // Apply scene-specific camera settings
+                    viewer.cameraOrbit = scene.cameraOrbit;
+                    if (scene.cameraTarget) {
+                        viewer.cameraTarget = scene.cameraTarget;
+                    }
+                    viewer.jumpCameraToGoal();
+                };
+                
+                // Set up event listeners to apply settings after model loads
+                const leftLoadHandler = () => {
+                    applyCameraSettings(leftViewer);
+                };
+                const rightLoadHandler = () => {
+                    applyCameraSettings(rightViewer);
+                };
+                
+                // Remove old listeners if any
+                leftViewer.removeEventListener('load', leftLoadHandler);
+                rightViewer.removeEventListener('load', rightLoadHandler);
+                
+                // Add new listeners
+                leftViewer.addEventListener('load', leftLoadHandler, { once: true });
+                rightViewer.addEventListener('load', rightLoadHandler, { once: true });
+                
+                // Update model sources
+                leftViewer.src = scene.modelWithout;
+                rightViewer.src = scene.modelWith;
+                
+                // Also apply immediately in case models are already loaded
+                applyCameraSettings(leftViewer);
+                applyCameraSettings(rightViewer);
+            }
+            
+            // Reset slider position to center
+            const slider = document.getElementById('comparisonSlider');
+            const leftModel = document.querySelector('.left-model');
+            const rightModel = document.querySelector('.right-model');
+            
+            if (slider && leftModel && rightModel) {
+                slider.style.left = '50%';
+                leftModel.style.clipPath = 'inset(0 50% 0 0)';
+                rightModel.style.clipPath = 'inset(0 0 0 50%)';
+            }
+            
+        }
+
+        // Comparison Slider Functionality
+        (function() {
+            const slider = document.getElementById('comparisonSlider');
+            const leftModel = document.querySelector('.left-model');
+            const rightModel = document.querySelector('.right-model');
+            const container = document.querySelector('.comparison-viewer-container');
+            const leftViewer = document.getElementById('ablationModelLeft');
+            const rightViewer = document.getElementById('ablationModelRight');
+            
+            if (!slider || !container) return;
+            
+            let isDragging = false;
+            
+            function updateSliderPosition(clientX) {
+                const rect = container.getBoundingClientRect();
+                let position = ((clientX - rect.left) / rect.width) * 100;
+                position = Math.max(0, Math.min(100, position));
+                
+                slider.style.left = position + '%';
+                leftModel.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
+                rightModel.style.clipPath = `inset(0 0 0 ${position}%)`;
+            }
+            
+            slider.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                updateSliderPosition(e.clientX);
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+            
+            // Touch events for mobile
+            slider.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                updateSliderPosition(e.touches[0].clientX);
+            });
+            
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+            
+            // Synchronize camera movements
+            function syncCameraOrbit() {
+                if (leftViewer && rightViewer) {
+                    const leftOrbit = leftViewer.getCameraOrbit();
+                    rightViewer.cameraOrbit = `${leftOrbit.theta}rad ${leftOrbit.phi}rad ${leftOrbit.radius}m`;
+                }
+            }
+            
+            function syncCameraTarget() {
+                if (leftViewer && rightViewer) {
+                    const leftTarget = leftViewer.getCameraTarget();
+                    rightViewer.cameraTarget = `${leftTarget.x}m ${leftTarget.y}m ${leftTarget.z}m`;
+                }
+            }
+            
+            // Add camera sync listeners
+            if (leftViewer && rightViewer) {
+                leftViewer.addEventListener('camera-change', () => {
+                    syncCameraOrbit();
+                    syncCameraTarget();
+                });
+                
+                rightViewer.addEventListener('camera-change', () => {
+                    const rightOrbit = rightViewer.getCameraOrbit();
+                    leftViewer.cameraOrbit = `${rightOrbit.theta}rad ${rightOrbit.phi}rad ${rightOrbit.radius}m`;
+                    
+                    const rightTarget = rightViewer.getCameraTarget();
+                    leftViewer.cameraTarget = `${rightTarget.x}m ${rightTarget.y}m ${rightTarget.z}m`;
+                });
+            }
+        })();
 
     </script>
 </body>
