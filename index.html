@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreeFusion: Free Lunch from Auxiliary Inputs for 3D Reconstruction</title>
+    <title>OmniVGGT: Omni-Modality Driven Visual Geometry Grounded Transformer</title>
     <link rel="icon" type="image/png" href="images/icon.png">
     <!-- Model Viewer for 3D visualization -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
@@ -1013,10 +1013,10 @@
     <div class="container">
         <header>
             <div class="logo-container">
-                <img src="images/logo.png" alt="FreeFusion Logo" style="max-width: 200px; height: auto;">
+                <img src="images/logo.png" alt="OmniVGGT Logo" style="max-width: 200px; height: auto;">
             </div>
             <h1>
-                <span class="project-name"><span style="color: rgb(38, 89, 146);">Free</span><span style="color: rgb(199, 64, 52);">Fusion</span></span><span class="title-divider">:</span> Free Lunch from Auxiliary Inputs for 3D Reconstruction
+                <span class="project-name"><span style="color: rgb(38, 89, 146);">Omni</span><span style="color: rgb(199, 64, 52);">VGGT</span></span><span class="title-divider">:</span> Omni-Modality Driven Visual Geometry Grounded Transformer
             </h1>
             
             
@@ -1072,14 +1072,14 @@
                 <div class="highlight-box">
                     <p style="font-size: 1.1em; line-height: 1.8;">
                         General 3D foundation models have started to lead the trend of unifying diverse vision tasks, yet most assume RGB-only inputs and ignore readily available geometric cues (e.g., camera intrinsics, poses, and depth maps). 
-                        To address this issue, we introduce FreeFusion, a novel framework that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
+                        To address this issue, we introduce OmniVGGT, a novel framework that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
                         In our framework, a <strong>GeoAdapter</strong> is proposed to encode depth and camera intrinsics/extrinsics into a spatial foundation model.
                         It employs zero-initialized convolutions to progressively inject geometric information without disrupting the foundation model's representation space. 
                         Additionally, a <strong>Stochastic Multimodal Fusion</strong> regimen is proposed, which randomly samples modality subsets per instance during training. 
                         This enables an arbitrary number of modality inputs during testing and promotes learning robust spatial representations instead of overfitting to auxiliary cues. 
-                        Comprehensive experiments on several downstream tasks demonstrate that FreeFusion outperforms prior methods with auxiliary inputs and achieves state-of-the-art results even with RGB-only input. 
-                        To further highlight its practical utility, we integrated FreeFusion into <strong>vision-language-action (VLA) models</strong>. 
-                        The enhanced VLA model by FreeFusion achieves state-of-the-art performance across three simulation benchmarks and real-world manipulation tasks, showcasing strong robustness to clutter, spatial prompts, height awareness, and scale variation.
+                        Comprehensive experiments on several downstream tasks demonstrate that OmniVGGT outperforms prior methods with auxiliary inputs and achieves state-of-the-art results even with RGB-only input. 
+                        To further highlight its practical utility, we integrated OmniVGGT into <strong>vision-language-action (VLA) models</strong>. 
+                        The enhanced VLA model by OmniVGGT achieves state-of-the-art performance across three simulation benchmarks and real-world manipulation tasks, showcasing strong robustness to clutter, spatial prompts, height awareness, and scale variation.
                     </p>
                 </div>
             </div>
@@ -1089,7 +1089,7 @@
                 <div class="demo-container">
                     <img src="images/teaser.png" alt="Teaser">
                     <p class="image-caption">
-                        FreeFusion, a model that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
+                        OmniVGGT, a model that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
                     </p>
                 </div>
                 
@@ -1101,15 +1101,15 @@
                 <div class="feature-grid">
                     <div class="feature-card">
                         <h3>🔧 GeoAdapter for Stochastic Multimodal Inputs</h3>
-                        <p>FreeFusion uses a light-weight GeoAdapter that supports arbitrary numbers of input images, auxiliary modalities, and their combinations.</p>
+                        <p>OmniVGGT uses a light-weight GeoAdapter that supports arbitrary numbers of input images, auxiliary modalities, and their combinations.</p>
                     </div>
                     <div class="feature-card">
                         <h3>📊 Stochastic Multimodal Fusion</h3>
-                        <p>We adopt a rule-based stochastic training strategy for FreeFusion, ensuring its robustness and generalization when receiving varying numbers and combinations of modalities at test time.</p>
+                        <p>We adopt a rule-based stochastic training strategy for OmniVGGT, ensuring its robustness and generalization when receiving varying numbers and combinations of modalities at test time.</p>
                     </div>
                     <div class="feature-card">
                         <h3>🔌 Enhancing VLA Model Performance</h3>
-                        <p>We integrate FreeFusion with vision-language-action (VLA) models. Additional auxiliary information provides the VLA model with richer spatial understanding, thereby improving its success rate across various VLA tasks.</p>
+                        <p>We integrate OmniVGGT with vision-language-action (VLA) models. Additional auxiliary information provides the VLA model with richer spatial understanding, thereby improving its success rate across various VLA tasks.</p>
                     </div>
                 </div>
             </div>
@@ -1118,16 +1118,16 @@
             <div class="section">
                 <h2 class="section-title">Architecture</h2>
                 <div class="demo-container">
-                    <img src="images/overview.png" alt="FreeFusion Framework">
+                    <img src="images/overview.png" alt="OmniVGGT Framework">
                     <p class="image-caption">
-                        Overview of FreeFusion. 
+                        Overview of OmniVGGT. 
                     </p>
                 </div>
 
                 <div class="architecture-section">
                     <p>
                     Our goal is to design an enhanced spatial foundation model that not only reconstructs scenes from images but also accepts an arbitrary number of corresponding camera parameters and depth information as auxiliary inputs to guide more accurate 3D scene reconstruction.
-                    FreeFusion takes as input a set of images together with an arbitrary number of corresponding camera parameters (extrinsics and intrinsics) or depth maps. 
+                    OmniVGGT takes as input a set of images together with an arbitrary number of corresponding camera parameters (extrinsics and intrinsics) or depth maps. 
                     Camera placeholder tokens and depth placeholder tokens are used to substitute the tokens for which ground-truth information is missing. 
                     The inputs are processed through <i>L</i> layers of Alternating-Attention, and finally, three prediction heads are employed to output depth maps, camera poses, and 3D point maps.
                     </p>
@@ -1214,7 +1214,7 @@
                 <h2 class="section-title">More Interactive Visualization</h2>
                 <div class="interactive-vis-container">
                     <p class="vis-intro">
-                        FreeFusion reconstruction on diverse scenes. Click any thumbnail below to explore its 3D reconstruction and point cloud visualization.<br>
+                        OmniVGGT reconstruction on diverse scenes. Click any thumbnail below to explore its 3D reconstruction and point cloud visualization.<br>
                         <span style="font-size: 0.95em; color: #667eea;">💡 Hover over thumbnails to preview their image sequences</span>
                     </p>
 
@@ -1262,7 +1262,7 @@
                 <div class="results-section">
                     <div class="highlight-box">
                         <p style="font-size: 1.1em; font-weight: 600;">
-                            FreeFusion flexibly accommodates casual inputs, including arbitrary numbers of images, auxiliary information, and input combinations. 
+                            OmniVGGT flexibly accommodates casual inputs, including arbitrary numbers of images, auxiliary information, and input combinations. 
                             It achieves state-of-the-art performance across multiple tasks, such as <strong>dense reconstruction</strong>, <strong>multi-view depth estimation</strong>, <strong>camera pose estimation</strong>, and <strong>vision-language-action</strong>, while maintaining high inference efficiency. 
                         </p>
                     </div>
@@ -1276,19 +1276,19 @@
 
                     <div class="highlight-box">
                         <p style="font-size: 1.1em;">
-                            FreeFusion consistently outperforms VGGT even without auxiliary inputs, and all relevant metrics improve when different percentages of camera and depth information are provided. 
+                            OmniVGGT consistently outperforms VGGT even without auxiliary inputs, and all relevant metrics improve when different percentages of camera and depth information are provided. 
                     </div>
 
                     <div class="demo-container" style="margin: 40px 0;">
                         <img src="images/ablation.png" alt="Spatial Tracking">
                         <p class="image-caption">
-                            Visual Results of FreeFusion with Different Auxiliary Information.
+                            Visual Results of OmniVGGT with Different Auxiliary Information.
                         </p>
                     </div>
 
                     <div class="highlight-box">
                         <p style="font-size: 1.1em;">
-                            By exploiting auxiliary information, FreeFusion is capable of accurately reconstructing complex and highly challenging geometric environments. <br>
+                            By exploiting auxiliary information, OmniVGGT is capable of accurately reconstructing complex and highly challenging geometric environments. <br>
                             <strong>(Top)</strong> Camera pose and intrinsic information help correct challenging views with little or no overlap. <br>
                             <strong>(Middle)</strong> Providing depth information leads to more accurate local geometry, such as on door surfaces. <br> 
                             <strong>(Bottom)</strong> When both depth and camera information are provided, the relative distances and viewing angles are properly corrected.
@@ -1299,7 +1299,7 @@
                         <img src="images/visualization1.png" alt="Visualization1">
                         <p class="image-caption">
                             Visual Comparisons on 7-Scenes, NRGBD, and ETH3D datasets. <br>
-                            FreeFusion exhibits accurate spatial relationships and geometric consistency, even in extremely challenging cases. 
+                            OmniVGGT exhibits accurate spatial relationships and geometric consistency, even in extremely challenging cases. 
                         </p>
                     </div>
 
@@ -1329,8 +1329,8 @@
         </div>
 
         <footer>
-            <p>© 2025 FreeFusion Project | HKUST, NTU, SYSU, Alibaba Group</p>
-            <p style="margin-top: 10px; opacity: 0.8;">A Free Lunch from Auxiliary Inputs for 3D Reconstruction</p>
+            <p>© 2025 OmniVGGT Project | HKUST, NTU, SYSU, Alibaba Group</p>
+            <p style="margin-top: 10px; opacity: 0.8;">Omni-Modality Driven Visual Geometry Grounded Transformer</p>
         </footer>
     </div>
 
