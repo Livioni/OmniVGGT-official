@@ -1468,23 +1468,6 @@
 
         <div class="content">
 
-            <!-- Introduction Section -->
-            <div class="section">
-                <h2 class="section-title">Abstract</h2>
-                <div class="highlight-box">
-                    <p style="font-size: 1.1em; line-height: 1.8;">
-                        General 3D foundation models have started to lead the trend of unifying diverse vision tasks, yet most assume RGB-only inputs and ignore readily available geometric cues (e.g., camera intrinsics, poses, and depth maps). 
-                        To address this issue, we introduce OmniVGGT, a novel framework that can effectively benefit from an arbitrary number of auxiliary geometric modalities during both training and inference.
-                        In our framework, a <strong>GeoAdapter</strong> is proposed to encode depth and camera intrinsics/extrinsics into a spatial foundation model.
-                        It employs zero-initialized convolutions to progressively inject geometric information without disrupting the foundation model's representation space. 
-                        Additionally, a <strong>Stochastic Multimodal Fusion</strong> regimen is proposed, which randomly samples modality subsets per instance during training. 
-                        This enables an arbitrary number of modality inputs during testing and promotes learning robust spatial representations instead of overfitting to auxiliary cues. 
-                        Comprehensive experiments on several downstream tasks demonstrate that OmniVGGT outperforms prior methods with auxiliary inputs and achieves state-of-the-art results even with RGB-only input. 
-                        To further highlight its practical utility, we integrated OmniVGGT into <strong>vision-language-action (VLA) models</strong>. 
-                        The enhanced VLA model by OmniVGGT achieves state-of-the-art performance across three simulation benchmarks and real-world manipulation tasks, showcasing strong robustness to clutter, spatial prompts, height awareness, and scale variation.
-                    </p>
-                </div>
-            </div>
 
             <!-- Teaser Image -->
             <div class="section">
@@ -1500,6 +1483,12 @@
             <!-- Key Contributions -->
             <div class="section">
                 <h2 class="section-title">Key Contributions</h2>
+                <div class="demo-container">
+                    <img src="images/overview.png" alt="OmniVGGT Framework">
+                    <p class="image-caption">
+                        Overview of OmniVGGT. Our goal is to design an enhanced spatial foundation model that not only reconstructs scenes from images but also accepts an arbitrary number of corresponding camera parameters and depth information as auxiliary inputs to guide more accurate 3D scene reconstruction.
+                    </p>
+                </div>
                 <div class="feature-grid">
                     <div class="feature-card">
                         <h3>🔧 GeoAdapter for Stochastic Multimodal Inputs</h3>
@@ -1513,26 +1502,6 @@
                         <h3>🔌 Enhancing VLA Model Performance</h3>
                         <p>We integrate OmniVGGT with vision-language-action (VLA) models. Additional auxiliary information provides the VLA model with richer spatial understanding, thereby improving its success rate across various VLA tasks.</p>
                     </div>
-                </div>
-            </div>
-
-            <!-- Architecture Section -->
-            <div class="section">
-                <h2 class="section-title">Architecture</h2>
-                <div class="demo-container">
-                    <img src="images/overview.png" alt="OmniVGGT Framework">
-                    <p class="image-caption">
-                        Overview of OmniVGGT. 
-                    </p>
-                </div>
-
-                <div class="architecture-section">
-                    <p>
-                    Our goal is to design an enhanced spatial foundation model that not only reconstructs scenes from images but also accepts an arbitrary number of corresponding camera parameters and depth information as auxiliary inputs to guide more accurate 3D scene reconstruction.
-                    OmniVGGT takes as input a set of images together with an arbitrary number of corresponding camera parameters (extrinsics and intrinsics) or depth maps. 
-                    Camera placeholder tokens and depth placeholder tokens are used to substitute the tokens for which ground-truth information is missing. 
-                    The inputs are processed through <i>L</i> layers of Alternating-Attention, and finally, three prediction heads are employed to output depth maps, camera poses, and 3D point maps.
-                    </p>
                 </div>
             </div>
 
