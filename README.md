@@ -12,10 +12,10 @@
 
 ---
 
-Haosong Peng `<sup>`*`</sup>`, Hao Li `<sup>`* `</sup>`, Yalun Dai, Yushi Lan, Yihang Luo, Tianyu Qi,
-Zhengshen Zhang, Yufeng Zhan `<sup>`†`</sup>`, Junfei Zhang `<sup>`†`</sup>`, Wenchao Xu `<sup>`†`</sup>`, Ziwei Liu
+Haosong Peng*, Hao Li*, Yalun Dai, Yushi Lan, Yihang Luo, Tianyu Qi,
+Zhengshen Zhang, Yufeng Zhan†, Junfei Zhang†, Wenchao Xu†, Ziwei Liu
 
-`<sup>`*`</sup>` Equal Contribution, `<sup>`†`</sup>` Corresponding Author
+ \* Equal Contribution, † Corresponding Author
 
 </div>
 
