@@ -64,7 +64,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # Load the model
 model = OmniVGGT().to(device)
 from safetensors.torch import load_file
-state_dict = load_file("checkpoints/from132_136k.safetensors")
+# model to be released
 model.load_state_dict(state_dict, strict=True)
 model.eval()
 

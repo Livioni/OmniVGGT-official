@@ -292,7 +292,7 @@ def main():
     # Initialize and load OmniVGGT model
     print("Initializing and loading OmniVGGT model...")
     model = OmniVGGT().to(device)
-    state_dict = load_file("checkpoints/from132_136k.safetensors")
+    # model checkpoint to be released
     model.load_state_dict(state_dict, strict=True)
     model.eval()
 
