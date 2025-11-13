@@ -12,7 +12,7 @@
 
 ---
 
-Haosong Peng*, Hao Li*, Yalun Dai, Yushi Lan, Yihang Luo, Tianyu Qi,
+Haosong Peng*, Hao Li*, Yalun Dai, Yushi Lan, Yihang Luo, Tianyu Qi, <br>
 Zhengshen Zhang, Yufeng Zhan†, Junfei Zhang†, Wenchao Xu†, Ziwei Liu
 
  \* Equal Contribution, † Corresponding Author
