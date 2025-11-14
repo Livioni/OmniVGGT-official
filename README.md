@@ -199,9 +199,9 @@ python inference.py --image_folder example/office/images --camera_folder example
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{li2025iggt,
-  title={{IGGT}: {INSTANCE-GROUNDED} {GEOMETRY} {TRANSFORMER} for {SEMANTIC} {3D} {RECONSTRUCTION}},
-  author={Li, Hao and Zou, Zhengyu and Liu, Fangfu and Zhang, Xuanyang and Hong, Fangzhou and Cao, Yukang and Lan, Yushi and Zhang, Manyuan and Yu, Gang and Zhang, Dingwen and Liu, Ziwei},
+{omnivggt2025,
+  title={OmniVGGT: Omni-Modality Driven Visual Geometry Grounded Transformer},
+  author={Haosong Peng and Hao Li and Yalun Dai and Yushi Lan and Yihang Luo and Tianyu Qi and Zhengshen Zhang and Yufeng Zhan and Junfei Zhang and Wenchao Xu and Ziwei Liu}
   journal={arXiv preprint arXiv:2510.22706},
   year={2025}
 }
