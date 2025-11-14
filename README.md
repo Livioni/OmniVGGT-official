@@ -4,10 +4,10 @@
 
 <h1>OmniVGGT: Omni-Modality Driven Visual Geometry Grounded Transformer</h1>
 
-<a href="https://arxiv.org/abs/2510.22706" target="blank" rel="noopener noreferrer">
+<a href="https://arxiv.org/abs/2511.10560" target="blank" rel="noopener noreferrer">
   <img src="https://img.shields.io/badge/Paper-OmniVGGT-red" alt="Paper PDF">
 </a>
-<a href="https://arxiv.org/abs/2510.22706"><img src="https://img.shields.io/badge/arXiv-2510.22706-b31b1b" alt="arXiv"></a>
+<a href="https://arxiv.org/abs/2511.10560"><img src="https://img.shields.io/badge/arXiv-2510.22706-b31b1b" alt="arXiv"></a>
 <a href="https://livioni.github.io/OmniVGGT-offcial"><img src="https://img.shields.io/badge/Project_Page-green" alt="Project Page"></a>
 
 ---
@@ -202,7 +202,7 @@ If you use this code in your research, please cite:
 {omnivggt2025,
   title={OmniVGGT: Omni-Modality Driven Visual Geometry Grounded Transformer},
   author={Haosong Peng and Hao Li and Yalun Dai and Yushi Lan and Yihang Luo and Tianyu Qi and Zhengshen Zhang and Yufeng Zhan and Junfei Zhang and Wenchao Xu and Ziwei Liu}
-  journal={arXiv preprint arXiv:2510.22706},
+  journal={arXiv preprint arXiv:2511.10560},
   year={2025}
 }
 ```
