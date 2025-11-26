@@ -9,6 +9,7 @@ __pycache__/
 *$py.class
 .DS_Store
 .vscode/
+.gradio/
 
 # C extensions
 *.so

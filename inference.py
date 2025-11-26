@@ -40,6 +40,8 @@ def viser_wrapper(
     use_point_map: bool = False,
     background_mode: bool = False,
     mask_sky: bool = False,
+    mask_black_bg: bool = False,
+    mask_white_bg: bool = False,
     image_folder: Optional[str] = None,
 ):
     """
@@ -61,6 +63,8 @@ def viser_wrapper(
         use_point_map (bool): Whether to visualize world_points or use depth-based points.
         background_mode (bool): Whether to run the server in background thread.
         mask_sky (bool): Whether to apply sky segmentation to filter out sky points.
+        mask_black_bg (bool): Whether to mask out black background pixels.
+        mask_white_bg (bool): Whether to mask out white background pixels.
         image_folder (str): Path to the folder containing input images.
     """
     print(f"Starting viser server on port {port}")
@@ -127,6 +131,17 @@ def viser_wrapper(
     # Compute the threshold value as the given percentile
     init_threshold_val = np.percentile(conf_flat, init_conf_threshold)
     init_conf_mask = (conf_flat >= init_threshold_val) & (conf_flat > 0.1)
+    
+    # Apply black background mask if enabled
+    if mask_black_bg:
+        black_bg_mask = colors_flat.sum(axis=1) >= 16
+        init_conf_mask = init_conf_mask & black_bg_mask
+    
+    # Apply white background mask if enabled
+    if mask_white_bg:
+        white_bg_mask = ~((colors_flat[:, 0] > 240) & (colors_flat[:, 1] > 240) & (colors_flat[:, 2] > 240))
+        init_conf_mask = init_conf_mask & white_bg_mask
+    
     point_cloud = server.scene.add_point_cloud(
         name="viser_pcd",
         points=points_centered[init_conf_mask],
@@ -205,6 +220,16 @@ def viser_wrapper(
         print(f"Threshold absolute value: {threshold_val}, percentage: {current_percentage}%")
 
         conf_mask = (conf_flat >= threshold_val) & (conf_flat > 1e-5)
+        
+        # Apply black background mask if enabled
+        if mask_black_bg:
+            black_bg_mask = colors_flat.sum(axis=1) >= 16
+            conf_mask = conf_mask & black_bg_mask
+        
+        # Apply white background mask if enabled
+        if mask_white_bg:
+            white_bg_mask = ~((colors_flat[:, 0] > 240) & (colors_flat[:, 1] > 240) & (colors_flat[:, 2] > 240))
+            conf_mask = conf_mask & white_bg_mask
 
         if gui_frame_selector.value == "All":
             frame_mask = np.ones_like(conf_mask, dtype=bool)
@@ -264,6 +289,8 @@ parser.add_argument("--camera_folder",type=str,default=None,help="Path to folder
 # Processing options
 parser.add_argument("--use_point_map",action="store_true",help="Use point map instead of depth-based points")
 parser.add_argument("--mask_sky",action="store_true",help="Apply sky segmentation to filter out sky points")
+parser.add_argument("--mask_black_bg",action="store_true",help="Mask out black background pixels")
+parser.add_argument("--mask_white_bg",action="store_true",help="Mask out white background pixels")
 parser.add_argument("--target_size",type=int,default=518,help="Target size for the images")
 
 # Visualization options
@@ -293,6 +320,7 @@ def main():
     print("Initializing and loading OmniVGGT model...")
     model = OmniVGGT().to(device)
     # model checkpoint to be released
+    state_dict = load_file("/home/qity/Documents/phs/OmniVGGT/checkpoints/final_version/from132_296k.safetensors")
     model.load_state_dict(state_dict, strict=True)
     model.eval()
 
@@ -369,6 +397,12 @@ def main():
 
     if args.mask_sky:
         print("Sky segmentation enabled - will filter out sky points")
+    
+    if args.mask_black_bg:
+        print("Black background masking enabled - will filter out black background points")
+    
+    if args.mask_white_bg:
+        print("White background masking enabled - will filter out white background points")
 
     # Start visualization server
     print("Starting viser visualization...")
@@ -379,6 +413,8 @@ def main():
         use_point_map=args.use_point_map,
         background_mode=args.background_mode,
         mask_sky=args.mask_sky,
+        mask_black_bg=args.mask_black_bg,
+        mask_white_bg=args.mask_white_bg,
         image_folder=args.image_folder,
     )
     print("Visualization complete")

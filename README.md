@@ -96,15 +96,30 @@ with torch.no_grad():
 
 ### Advanced Options
 
-With Anuxiliary Camera and Depth:
-
-If you have Anuxiliary truth camera parameters and/or depth maps:
-
 ```bash
+# Basic usage - only images required
+python inference.py --image_folder example/office/images/
+
+# With auxiliary camera and depth (optional)
 python inference.py \
-    --image_folder example/office/images/ \ 
-    --camera_folder example/office/cameras/ \ #optional
-    --depth_folder example/office/depths/ #optional
+    --image_folder example/office/images/ \
+    --camera_folder example/office/cameras/ \  # optional: auxiliary camera parameters
+    --depth_folder example/office/depths/ \    # optional: auxiliary depth maps
+    --target_size 518 \                        # target image size (default: 518)
+    \
+    # Processing options
+    --use_point_map \                          # use point map instead of depth-based points
+    --mask_sky \                               # apply sky segmentation to filter out sky points
+    --mask_black_bg \                          # mask out black background pixels (RGB sum < 16)
+    --mask_white_bg \                          # mask out white background pixels (RGB > 240)
+    \
+    # Visualization options
+    --conf_threshold 25.0 \                    # initial confidence threshold percentage (default: 25.0)
+    --port 8080 \                              # viser server port (default: 8080)
+    --background_mode \                        # run server in background mode
+    \
+    # Export options
+    --save_glb                                 # save output as GLB file (saved as scene.glb)
 ```
 
 ## 📊 Input Description
@@ -173,8 +188,8 @@ example/infinigen
 ### Comparison: Without vs. With Camera Parameters
 
 <div align="center">
-  <img src="assets/left.png" alt="Without Camera" width="400"/>
-  <img src="assets/right.png" alt="With Camera" width="400"/>
+  <img src="assets/officewo:c.png" alt="Without Camera" width="400"/>
+  <img src="assets/officew:c.png" alt="With Camera" width="400"/>
 </div>
 
 **Left**: Results without auxiliary camera parameters
