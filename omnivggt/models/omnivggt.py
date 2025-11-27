@@ -13,8 +13,7 @@ class OmniVGGT(nn.Module, PyTorchModelHubMixin):
 
         self.aggregator = ZeroAggregator(img_size=img_size, patch_size=patch_size, embed_dim=embed_dim, pose_hidden_dim = 9)
         self.camera_head = CameraHead(dim_in=2 * embed_dim)
-        # self.point_head = DPTHead(dim_in=2 * embed_dim, output_dim=4, activation="inv_log", conf_activation="expp1")
-        self.point_head = None
+        self.point_head = DPTHead(dim_in=2 * embed_dim, output_dim=4, activation="inv_log", conf_activation="expp1")
         self.depth_head = DPTHead(dim_in=2 * embed_dim, output_dim=2, activation="exp", conf_activation="expp1")
     
     

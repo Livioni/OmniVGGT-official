@@ -318,11 +318,11 @@ def main():
 
     # Initialize and load OmniVGGT model
     print("Initializing and loading OmniVGGT model...")
-    model = OmniVGGT().to(device)
-    # model checkpoint to be released
-    state_dict = load_file("/home/qity/Documents/phs/OmniVGGT/checkpoints/final_version/from132_296k.safetensors")
+    model = OmniVGGT()
+    # Load weights from local checkpoints
+    state_dict = load_file("checkpoints/OmniVGGT.safetensors")
     model.load_state_dict(state_dict, strict=True)
-    model.eval()
+    model.to(device).eval()
 
     # Load input data
     print(f"Loading images from {args.image_folder}...")

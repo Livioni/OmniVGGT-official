@@ -10,6 +10,7 @@
 </a>
 <a href="https://arxiv.org/abs/2511.10560"><img src="https://img.shields.io/badge/arXiv-2510.22706-b31b1b" alt="arXiv"></a>
 <a href="https://livioni.github.io/OmniVGGT-official"><img src="https://img.shields.io/badge/Project_Page-green" alt="Project Page"></a>
+<a href="https://huggingface.co/Livioni/OmniVGGT"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging_Face-OmniVGGT-yellow" alt="Hugging Face"></a>
 
 ---
 
@@ -42,13 +43,6 @@ pip install torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 --index-url https
 pip install -r requirements.txt
 ```
 
-## 📦 Model Weights
-
-Download the pretrained model weights:
-
-- **OmniVGGT Model**: [Download Link] (To be provided)
-
-Place the downloaded weights in the `checkpoints/` directory.
 
 ## 🚀 Quick Start
 
@@ -65,7 +59,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # Load the model
 model = OmniVGGT().to(device)
 from safetensors.torch import load_file
-# model to be released
+state_dict = load_file("checkpoints/OmniVGGT.safetensors")
 model.load_state_dict(state_dict, strict=True)
 model.eval()
 
@@ -207,7 +201,7 @@ python inference.py --image_folder example/office/images --camera_folder example
 ## 📝 To-Do List
 
 - [X] Release project paper.
-- [ ] Release pretrained models.
+- [X] Release pretrained models.
 - [ ] Release training code.
 
 ## 🤝 Citation
