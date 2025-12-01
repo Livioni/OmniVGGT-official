@@ -25,7 +25,7 @@ from PIL import Image
 import torch
 import torch.distributed as dist
 from torch import inf
-from vggt.utils.misc import closed_form_inverse_se3
+from omnivggt.utils.geometry import closed_form_inverse_se3
 
 class SmoothedValue(object):
     """Track a series of values and provide access to smoothed values over a

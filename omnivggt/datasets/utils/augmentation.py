@@ -71,4 +71,5 @@ def get_image_augmentation(
             )
         )
 
+    transform_list.append(transforms.ToTensor())
     return transforms.Compose(transform_list) if transform_list else None
