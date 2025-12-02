@@ -175,7 +175,7 @@ example/infinigen
 
 - If one or more images have auxiliary camera information, please ensure that the first image always includes camera information.
 - Camera poses and intrinsics are provided in **.txt** files. Please refer to [frame-000002.txt](example/office/cameras/frame-000002.txt) for specific examples. Depth maps can be loaded from either **.png** or **.npy** files.
-- Camera poses are expected to follow the OpenCV `camera-from-world` convention, Depth maps should be aligned with their corresponding camera poses.
+- Camera poses are expected to follow the OpenCV `camera-to-world` convention, Depth maps should be aligned with their corresponding camera poses.
 
 ## 📸 Example
 

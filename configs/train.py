@@ -69,7 +69,7 @@ depth_valid_range = 0.98
 
 # Point loss
 point_loss_weight = 1.0
-point_loss_type = "normal"
+point_gradient_loss_fn = "normal"
 point_valid_range = 0.98
 
 # == Visualization Configuration ==
