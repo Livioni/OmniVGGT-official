@@ -9,11 +9,11 @@ logging_dir = "logs"
 
 # == Logging Configuration ==
 wandb = False
-tensorboard = False
+tensorboard = True
 report_to = "tensorboard"
 num_save_log = 10
 num_save_visual = 500
-checkpointing_steps = 50
+checkpointing_steps = 100
 
 # == Model Configuration ==
 model_url = "https://huggingface.co/facebook/VGGT-1B/resolve/main/model.pt"
@@ -26,7 +26,7 @@ enable_camera = True
 # == Training Configuration ==
 mixed_precision = "bf16"  # Options: "no", "fp16", "bf16"
 seed = 42
-num_train_epochs = 3
+num_train_epochs = 2
 gradient_accumulation_steps = 1
 max_grad_norm = 1.0
 cam_drop_prob = 0.1
@@ -52,7 +52,7 @@ lr_point_head = 2e-5
 
 # == Learning Rate Scheduler Configuration ==
 lr_scheduler_type = "cosine_with_warmup"
-warmup_steps = 8000
+warmup_steps = 50
 eta_min_factor = 0.1  # Minimum learning rate factor for cosine decay
 
 # == Loss Configuration ==
@@ -80,7 +80,7 @@ vis_mask_sky = False
 vis_prediction_mode = "Predicted Depth"
 
 # == Resume Configuration ==
-resume_model_path = None
+resume_model_path = "outputs/omnivggt-test/checkpoint-1-250"
 
 # == Dataset Configuration ==
 resolution = [(518, 518), (518, 490), (518, 462), 
@@ -90,7 +90,7 @@ resolution = [(518, 518), (518, 490), (518, 462),
               (518, 238), (518, 210), (518, 182), 
               (518, 168)]
 
-train_dataset = f"1000 @ ARKitScenesHigh(use_cache = False, quick = True, top_k = 64, dset='Training', z_far = 50, aug_crop=16, resolution={resolution}, transform=ColorJitter, seed=985)"
+train_dataset = f"1000 @ ARKitScenesHigh(use_cache = True, quick = False, top_k = 64, dset='Training', z_far = 50, aug_crop=16, resolution={resolution}, transform=ColorJitter, seed=985)"
 
 
 

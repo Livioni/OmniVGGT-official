@@ -113,7 +113,7 @@ class AnchorFrameSampler(BatchedRandomSampler):
             recent_queue.append(local_pos)
             recent_mask[local_pos] = True
 
-        # 序列长度选择
+       
         if self.image_num_batch == 24:
             valid_lengths = [1, 2, 4, 6, 8, 12]
         elif self.image_num_batch == 18:
