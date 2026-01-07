@@ -198,11 +198,138 @@ python inference.py --image_folder example/office/images
 python inference.py --image_folder example/office/images --camera_folder example/office/cameras
 ```
 
+## Training
+
+### Prepare Datasets
+
+Follow [CUT3R](https://github.com/CUT3R/CUT3R/blob/main/docs/preprocess.md) to download and preprocess the datasets.
+
+In general, a preprocessed dataset should contain at least **RGB images** and the corresponding **depth** and **camera parameters**, including **extrinsics** and **intrinsics**, and some may contain additional sky masks.
+
+Take [dl3dv.py](omnivggt/datasets/dl3dv.py) as an example: a complete scene is organized as follows:
+
+```bash
+dl3dv
+├── 1K
+│   ├── 001dccbc1f78146a9f03861026613d8e73f39f372b545b26118e37a23c740d5f
+│   │   └── dense
+│   │       ├── cam           # camera parameters (extrinsics + intrinsics), frame_xxxxx.npz
+│   │       ├── depth         # depth maps, frame_xxxxx.npz
+│   │       ├── outlier_mask  # depth outlier masks (invalid depth regions), frame_xxxxx.png
+│   │       ├── rgb           # original RGB image sequence, frame_xxxxx.png
+│   │       └── sky_mask      # sky segmentation masks, frame_xxxxx.png 
+│   ├── <scene_id_2>
+│   │   └── dense
+│   │       └── ...
+│   └── ...
+├── 2K
+│   ├── <scene_id_1>
+│   │   └── dense
+│   │       └── ...
+│   └── ...
+└── ...
+```
+
+We have the following important configs in the script.
+
+1. **dataset_location**: Dataset storage location
+2. **use_cache**: Whether to use cached annotations. Set `use_cache = False` for the first run to traverse the dataset and cache data addresses, `use_cache = True` for training to load cached data directly for faster startup.
+3. **dset**: Used when datasets have subsets, such as distinguishing between Train and Test.
+4. **specify**: Used for testing to fix the images extracted by get_item for easier comparison.
+5. **top_k**: Number of cameras closest to each anchor frame camera, used for sequence sampling range per scene during training.
+6. **z_far**: Maximum scene depth, pixels above z_far will be masked out.
+7. **quick**: When `use_cache = False`, quickly load the first a few scenes of the dataset.
+8. **verbose**: Print detailed information.
+
+```python
+    dataset = Dl3dv(
+        dataset_location="/mnt/disk3.8-4/datasets/dl3dv",
+        dset='1K',
+        use_cache=False,
+        top_k=50,
+        quick=False,
+        verbose=True,
+        resolution=(512, 224),
+        seed=777,
+        aug_crop=16,
+        z_far=200)
+```
+
+Modify lines 34, 393 to the dataset_location.
+
+Modify lines 160-167 to save the cached data paths. 
+
+Modify line 87 to the annoataions locations (cached data paths).
+
+Set `use_cache = False` and `quick = False` and run [dl3dv.py](omnivggt/datasets/dl3dv.py) with the above settings for the first time to generate cache files.  
+
+```bash
+python omnivggt/datasets/dl3dv.py
+```
+
+You can also use `visualize_scene((100, 0, num_views))` to visualize the saved scene to make sure the dataloader is correct.
+
+### Training Config
+
+This section explains the configuration parameters in `configs/train.py`:
+
+#### Common Configuration
+- **output_dir**: Output directory for saving model checkpoints and logs (default: "outputs")
+- **exp_name**: Experiment name (default: "omnivggt")
+- **logging_dir**: Directory for logging files (default: "logs")
+
+#### Logging Configuration
+- **wandb**: Enable Weights & Biases logging (default: False)
+- **tensorboard**: Enable TensorBoard logging (default: True)
+- **num_save_log**: Number of recent log files to keep (default: 10)
+- **num_save_visual**: Frequency of saving visualization results to the output_dir. (every N steps, default: 5000)
+- **checkpointing_steps**: Save checkpoint every N steps (default: 10000)
+
+#### Model Configuration
+- **model_url**: URL to load pretrained model weights (default: VGGT-1B model)
+- **model_load_strict**: Whether to strictly load model weights (default: False)
+- **model_requires_grad**: Whether model parameters require gradients during training (default: True)
+- **enable_point**: Enable point prediction head (default: True)
+- **enable_depth**: Enable depth prediction head (default: True)
+- **enable_camera**: Enable camera parameter prediction head (default: True)
+
+#### Training Configuration
+- **mixed_precision**: Mixed precision training mode, options: "no", "fp16", "bf16" (default: "bf16")
+- **seed**: Random seed for reproducibility (default: 42)
+- **num_train_epochs**: Number of training epochs (default: 10)
+- **gradient_accumulation_steps**: Gradient accumulation steps (default: 2)
+- **max_grad_norm**: Maximum gradient norm for clipping (default: 1.0)
+- **cam_drop_prob**: Camera dropout probability during training (default: 0.1)
+- **depth_drop_prob**: Depth dropout probability during training (default: 0.3)
+- **save_each_epoch**: Whether to save checkpoint after each epoch (default: False)
+
+#### Dataset Configuration
+- **train_batch_images**: Number of images per training batch (default: 24)
+- **num_workers**: Number of data loading workers (default: 8)
+- **resolution**: List of image resolutions for multi-resolution training
+- **train_dataset**: Dataset composition string defining training datasets and their configurations, make sure set use_cache = True, quick = False here to accelerate loading speed.
+
+
+#### Resume Configuration
+- **resume_model_path**: Path to resume training from a checkpoint (default: None)
+
+### Start Training
+
+#### Single GPU Training
+```bash
+python train_omnivggt.py --config configs/train.py
+```
+
+#### Multi-GPU Training (One Node 8x GPUs)
+```bash
+accelerate launch --num_processes=8 train_omnivggt.py --config configs/train.py
+```
+
 ## 📝 To-Do List
 
 - [X] Release project paper.
 - [X] Release pretrained models.
-- [ ] Release training code.
+- [X] Release training code.
 
 ## 🤝 Citation
 
