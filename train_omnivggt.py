@@ -9,6 +9,7 @@ import torch
 import wandb
 import accelerate
 from tqdm import tqdm
+import itertools
 
 from accelerate.logging import get_logger
 from accelerate.utils import ProjectConfiguration, set_seed, DistributedDataParallelKwargs
@@ -212,8 +213,13 @@ if __name__ == '__main__':
             disable=not accelerator.is_local_main_process,
         )
         
+        # Build iterator so we can skip already completed batches when resuming
+        if step_in_epoch > 0:
+            logger.info(f"Skipping {step_in_epoch} batches to resume within epoch {epoch + 1}")
+        train_iter = itertools.islice(train_dataloader, step_in_epoch, None)
+        
         # Training loop for this epoch
-        for step, batch in enumerate(train_dataloader):
+        for step, batch in enumerate(train_iter, start=step_in_epoch):
             batch = merge_dicts(batch)
             
             # Normalize camera extrinsics and points for loss computation
