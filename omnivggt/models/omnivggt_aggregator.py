@@ -1,6 +1,7 @@
 import logging
 import torch
 import torch.nn as nn
+import numpy as np
 from typing import Tuple, List
 
 from omnivggt.layers import PatchEmbed
@@ -24,7 +25,9 @@ class ZeroAggregator(Aggregator):
                  mlp_ratio=4, 
                  num_register_tokens=4, 
                  block_fn=Block, 
-                 pose_hidden_dim=512,
+                 pose_hidden_dim=9,
+                 cam_drop_prob=0.1,
+                 depth_drop_prob=0.1,
                  qkv_bias=True, 
                  proj_bias=True, 
                  ffn_bias=True, 
@@ -54,6 +57,8 @@ class ZeroAggregator(Aggregator):
                          init_values)
         
         
+        self.cam_drop_prob = cam_drop_prob
+        self.depth_drop_prob = depth_drop_prob
         self.patch_start_idx = 1 + num_register_tokens
         self.depth_placeholder = nn.Parameter(torch.zeros(1, 1, embed_dim))
         
@@ -127,7 +132,166 @@ class ZeroAggregator(Aggregator):
 
         return norm.unsqueeze(-1)
     
+    def select_camera_gt(self, S, cam_drop_prob=0.1, rng=None):
+        rng = rng or np.random.default_rng()
+
+        if rng.random() < cam_drop_prob:
+            return []
+
+        k = rng.integers(0, S + 1)
+        if k == 0:
+            return []
+
+        # 按顺序从 0 开始选取 k 个
+        idx = list(range(k))
+
+        return idx
+    
+    def select_depth_gt(self, S, depth_drop_prob=0.1, rng=None):
+        rng = rng or np.random.default_rng()
+
+        if rng.random() < depth_drop_prob:
+            return []
+
+        k = rng.integers(0, S + 1)
+        if k == 0:
+            return []
+
+        idx = rng.choice(S, size=k, replace=False)
+
+        return sorted(idx.tolist())
+    
     def forward(self, images: torch.Tensor, 
+                extrinsics: torch.Tensor, 
+                intrinsics: torch.Tensor,
+                depth: torch.Tensor,
+                mask: torch.Tensor,) -> Tuple[List[torch.Tensor], int]:
+        B, S, C_in, H, W = images.shape
+        
+        if C_in != 3:
+            raise ValueError(f"Expected 3 input channels, got {C_in}")
+
+        # Normalize images and reshape for patch embed
+        images = (images - self._resnet_mean) / self._resnet_std
+
+        # Reshape to [B*S, C, H, W] for patch embedding
+        images = images.view(B * S, C_in, H, W)
+        patch_tokens = self.patch_embed(images)
+            
+        if isinstance(patch_tokens, dict):
+            patch_tokens = patch_tokens["x_norm_patchtokens"]
+
+        K, P, C = patch_tokens.shape
+
+        # Expand camera and register tokens to match batch size and sequence length
+        camera_token = slice_expand_and_flatten(self.camera_token, B, S)
+        register_token = slice_expand_and_flatten(self.register_token, B, S)
+
+        camera_gt_index = self.select_camera_gt(S, self.cam_drop_prob)
+        depth_gt_index  = self.select_depth_gt(S, self.depth_drop_prob)
+        
+        if len(camera_gt_index) != 0:
+            camera_gt_length = len(camera_gt_index)
+            camera_idx_tensor = torch.tensor(camera_gt_index, device=depth.device)
+
+            extrinsics_selected = torch.index_select(extrinsics, dim=1, index=camera_idx_tensor)
+            intrinsics_selected = torch.index_select(intrinsics, dim=1, index=camera_idx_tensor)
+
+            extrinsics_gt_normalized = self.normalize_extrinsics(extrinsics_selected)
+            pose_encoding = extri_intri_to_pose_encoding(
+                        extrinsics=extrinsics_gt_normalized,
+                        intrinsics=intrinsics_selected,
+                        image_size_hw=(H, W),
+                        pose_encoding_type="absT_quaR_FoV",
+            )
+            gt_camera_token = self.pose_embeddings[0](pose_encoding).view(B * camera_gt_length, C).unsqueeze(1)
+            
+            device = depth.device
+            camera_full = torch.zeros(K, 1, C, device=device, dtype=camera_token.dtype)
+
+            camera_rows = (torch.arange(B, device=device).unsqueeze(1) * S + camera_idx_tensor.unsqueeze(0)).reshape(-1)
+            camera_full[camera_rows] = gt_camera_token.to(dtype=camera_token.dtype)
+            gt_camera_token = camera_full
+        else:
+            pose_encoding = None
+            gt_camera_token = torch.zeros(K, 1, C, device=depth.device, dtype=camera_token.dtype)
+
+
+        if len(depth_gt_index) != 0:
+            depth_gt_length = len(depth_gt_index)
+            idx_tensor = torch.tensor(depth_gt_index, device=depth.device)
+
+            depth_selected = torch.index_select(depth, dim=1, index=idx_tensor)   # [B, gt_len, H, W]
+            mask_selected  = torch.index_select(mask,  dim=1, index=idx_tensor)   # [B, gt_len, H, W]
+
+            depth_gt_normalized = self.normalize_depth(depth_selected, mask_selected)
+
+            depth_gt_normalized = depth_gt_normalized.view(B * depth_gt_length, 1, H, W)
+            mask_selected = mask_selected.view(B * depth_gt_length, 1, H, W)
+
+            depthmaps = torch.cat([depth_gt_normalized, mask_selected], dim=1)
+            depthmaps = self._match_dtype(depthmaps, self.depth_patch_embed.proj.weight)
+            gt_depth_token = self.depth_patch_embed(depthmaps)
+
+            device = depth.device
+            depth_full = self.depth_placeholder.expand(K, P, C).clone()
+
+            rows = (torch.arange(B, device=device).unsqueeze(1) * S + idx_tensor.unsqueeze(0)).reshape(-1)
+            depth_full[rows] = gt_depth_token.to(dtype=patch_tokens.dtype)  # [B*gt_len, P, C]
+            gt_depth_token = depth_full                                   # [B*S, P, C]
+        else:
+            gt_depth_token = self.depth_placeholder.expand(K, P, C)
+
+
+        camera_token = camera_token + self.camera_adapters[0](gt_camera_token)
+        patch_tokens = patch_tokens + gt_depth_token
+        tokens = torch.cat([camera_token, register_token, patch_tokens], dim=1)
+
+        pos = None
+        if self.rope is not None:
+            pos = self.position_getter(B * S, H // self.patch_size, W // self.patch_size, device=images.device)
+
+        if self.patch_start_idx > 0:
+            # do not use position embedding for special tokens (camera and register tokens)
+            # so set pos to 0 for the special tokens
+            pos = pos + 1
+            pos_special = torch.zeros(B * S, self.patch_start_idx, 2).to(images.device).to(pos.dtype)
+            pos = torch.cat([pos_special, pos], dim=1)
+
+        # update P because we added special tokens
+        P_old = P
+        _, P, C = tokens.shape
+
+        frame_idx = 0
+        global_idx = 0
+        output_list = []
+
+        for index in range(self.aa_block_num):
+            for attn_type in self.aa_order:
+                if attn_type == "frame":
+                    tokens, frame_idx, frame_intermediates = self._process_frame_attention(
+                        tokens, B, S, P, C, frame_idx, pos=pos, index = index + 1, camera_gt_index = camera_gt_index,
+                        pose_encoding=pose_encoding, register_shape = register_token.shape, P_old = P_old
+                    )
+                elif attn_type == "global":
+                    tokens, global_idx, global_intermediates = self._process_global_attention(
+                        tokens, B, S, P, C, global_idx, pos=pos
+                    )
+                else:
+                    raise ValueError(f"Unknown attention type: {attn_type}")
+
+            for i in range(len(frame_intermediates)):
+                # concat frame and global intermediates, [B x S x P x 2C]
+                concat_inter = torch.cat([frame_intermediates[i], global_intermediates[i]], dim=-1)
+                output_list.append(concat_inter)
+
+        del concat_inter
+        del frame_intermediates
+        del global_intermediates
+        return output_list, self.patch_start_idx
+
+
+    def inference(self, images: torch.Tensor, 
                 extrinsics: torch.Tensor, 
                 intrinsics: torch.Tensor,
                 depth: torch.Tensor,

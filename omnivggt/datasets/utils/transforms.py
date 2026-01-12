@@ -4,8 +4,7 @@
 # --------------------------------------------------------
 # DUST3R default transforms
 # --------------------------------------------------------
-import torchvision.transforms as tvf
-from vggt.utils.image import ImgNorm
+from omnivggt.utils.image import ImgNorm
+from omnivggt.datasets.utils.augmentation import get_image_augmentation
 
-# define the standard image transforms
-ColorJitter = tvf.Compose([tvf.ColorJitter(0.5, 0.5, 0.5, 0.1), ImgNorm])
+ColorJitter = get_image_augmentation()
