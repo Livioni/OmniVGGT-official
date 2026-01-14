@@ -353,7 +353,7 @@ def main():
     # Run inference
     print("Running inference...")
     with torch.no_grad():
-        predictions = model(**inputs)
+        predictions = model.inference(**inputs)
 
     # Convert pose encoding to camera matrices
     print("Converting pose encoding to extrinsic and intrinsic matrices...")

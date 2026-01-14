@@ -182,8 +182,8 @@ example/infinigen
 ### Comparison: Without vs. With Camera Parameters
 
 <div align="center">
-  <img src="assets/officewo:c.png" alt="Without Camera" width="400"/>
-  <img src="assets/officew:c.png" alt="With Camera" width="400"/>
+  <img src="assets/officewoc.png" alt="Without Camera" width="400"/>
+  <img src="assets/officewc.png" alt="With Camera" width="400"/>
 </div>
 
 **Left**: Results without auxiliary camera parameters
