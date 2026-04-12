@@ -2,6 +2,8 @@
 
 <img src="assets/omnivggt.png" alt="OmniVGGT Logo" width="120"/>
 
+<h2 style="color: red; font-weight: bold;">CVPR 2026 Highlight</h2>
+
 <h1>OmniVGGT: Omni-Modality Driven Visual Geometry Grounded Transformer</h1>
 
 
