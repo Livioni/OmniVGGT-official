@@ -27,6 +27,8 @@ Zhengshen Zhang, Yufeng Zhan†, Junfei Zhang†, Wenchao Xu†, Ziwei Liu
   <img src="assets/teaser.png" alt="OmniVGGT Overview" width="800"/>
 </div>
 
+### We have updated our model performance evaluation on [SpatialBench](https://github.com/Ropedia/SpatialBench). Come and take a look!
+
 ## 🔍 Overview
 
 OmniVGGT is a spatial foundation model that can effectively benefit from an arbitrary number of auxiliary geometric modalities (depth, camera intrinsics and pose) to obtain high-quality 3D geometric results. Experimental results show that OmniVGGT achieves state-of-the-art performance across various downstream tasks and further improves performance on robot manipulation tasks.
